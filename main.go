@@ -47,7 +47,6 @@ func main() {
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var trimmed string
-	loot:
 	for x := range prefixes {
 		if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
 			trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
