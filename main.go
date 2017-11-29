@@ -19,8 +19,8 @@ var prefixes = []string{
 	"ok google",
 	"okay google",
 	"hey google",
-	"!google",
-	"!g",
+	"$google",
+	"$g",
 }
 
 type result struct {
@@ -47,6 +47,7 @@ func main() {
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var trimmed string
+	loot:
 	for x := range prefixes {
 		if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
 			trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
@@ -65,6 +66,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					panic(err)
 				}
 			}
+			break loot
 		}
 	}
 }
