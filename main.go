@@ -19,8 +19,8 @@ var prefixes = []string{
 	"ok google",
 	"okay google",
 	"hey google",
-	"$google",
 	"$g",
+	"$google", //order prevents double send
 }
 
 type result struct {
@@ -66,7 +66,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					panic(err)
 				}
 			}
-			break loot
 		}
 	}
 }
