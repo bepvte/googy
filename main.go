@@ -104,6 +104,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 			banned[m.Mentions[0].ID] = true
+			bannedFile.WriteString(m.Mentions[0].ID)
 		}
 	}
 }
