@@ -37,7 +37,7 @@ func main() {
 	if err != nil || string(token) == "" {
 		log.Fatalln("YOU FUCKED IT\nMAKE A `token` FILE")
 	}
-	bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+	bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
