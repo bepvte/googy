@@ -94,6 +94,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err)
 			return
 		}
+		log.Println(m.Author.ID)
 		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
 			log.Println("hi")
 			if len(m.Mentions) != 1 {
