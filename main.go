@@ -11,6 +11,9 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"io"
+	"os"
+	"bufio"
 )
 
 var s *discordgo.Session
@@ -27,10 +30,21 @@ type result struct {
 	url, desc string
 }
 
+var banned = map[string]bool{}
+var bannedFile *os.File
+
 func main() {
 	token, err := ioutil.ReadFile("token")
 	if err != nil || string(token) == "" {
 		log.Fatalln("YOU FUCKED IT\nMAKE A `token` FILE")
+	}
+	bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+	if err != nil {
+		panic(err)
+	}
+	scanner := bufio.NewScanner(bannedFile)
+	for scanner.Scan() {
+		banned[scanner.Text()] = true
 	}
 	s, err = discordgo.New("Bot " + string(token))
 	if err != nil {
@@ -46,6 +60,9 @@ func main() {
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author.ID == s.State.User.ID || m.Author.Bot || banned[m.Author.ID] {
+		return
+	}
 	var trimmed string
 	for x := range prefixes {
 		if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
@@ -66,6 +83,28 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 				break
 			}
+		}
+	}
+	if strings.ToLower(m.Content) == "$pacman" {
+		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
+		return
+	}
+	if strings.ToLower(m.Content) == "$botban" {
+		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if (permissions & discordgo.PermissionBanMembers) > 0 {
+			if len(m.Mentions) != 1 {
+				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
+				return
+			}
+			if _, err := bannedFile.WriteString(m.Mentions[0].ID + "\n"); err != nil {
+				s.ChannelMessageSend(m.ChannelID, "failed to write file. contact bot author.")
+				return
+			}
+			banned[m.Mentions[0].ID] = true
 		}
 	}
 }
