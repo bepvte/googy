@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/url"
 	"strings"
-	"io"
 	"os"
 	"bufio"
 )
