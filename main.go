@@ -89,12 +89,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	if strings.ToLower(m.Content) == "$botban" {
+		log.Println(m.Author.ID)
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		log.Println(m.Author.ID)
 		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
 			log.Println("hi")
 			if len(m.Mentions) != 1 {
