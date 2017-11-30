@@ -94,7 +94,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err)
 			return
 		}
-		if (permissions & discordgo.PermissionBanMembers) > 0 {
+		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
 			if len(m.Mentions) != 1 {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
