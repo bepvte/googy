@@ -88,15 +88,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
 		return
 	}
-	if strings.ToLower(m.Content) == "$botban" {
-		log.Println(m.Author.ID)
+	if strings.TrimPrefix(strings.ToLower(m.Content), "$botban") {
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
-			log.Println("hi")
 			if len(m.Mentions) != 1 {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
