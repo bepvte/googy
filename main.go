@@ -88,7 +88,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
 		return
 	}
-	if strings.TrimPrefix(strings.ToLower(m.Content), "$botban") {
+	if strings.HasPrefix(strings.ToLower(m.Content), "$botban") {
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
