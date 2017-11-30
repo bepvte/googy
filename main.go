@@ -95,6 +95,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
+			log.Println("hi")
 			if len(m.Mentions) != 1 {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
@@ -104,7 +105,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 			banned[m.Mentions[0].ID] = true
-			bannedFile.WriteString(m.Mentions[0].ID)
 		}
 	}
 }
