@@ -7,12 +7,12 @@ import (
 	"github.com/anaskhan96/soup"
 	"github.com/bwmarrin/discordgo"
 
+	"bufio"
 	"io/ioutil"
 	"log"
 	"net/url"
-	"strings"
 	"os"
-	"bufio"
+	"strings"
 )
 
 var s *discordgo.Session
@@ -21,8 +21,12 @@ var prefixes = []string{
 	"ok google",
 	"okay google",
 	"hey google",
-	"$google", //order prevents double send
+	"$google",
 	"$g",
+	"google dot com search",
+	"ok googy",
+	"okay googy",
+	"hey googy",
 }
 
 type result struct {
@@ -94,7 +98,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err)
 			return
 		}
-		if (permissions & discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288"{
+		if (permissions&discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288" {
 			if len(m.Mentions) != 1 {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
