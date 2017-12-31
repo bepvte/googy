@@ -23,7 +23,6 @@ var prefixes = []string{
 	"hey google",
 	"$google",
 	"$g",
-	"google dot com search",
 	"ok googy",
 	"okay googy",
 	"hey googy",
