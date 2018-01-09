@@ -7,12 +7,12 @@ import (
 	"github.com/anaskhan96/soup"
 	"github.com/bwmarrin/discordgo"
 
-	"bufio"
-	"io/ioutil"
+	_ "github.com/lib/pq"
 	"log"
 	"net/url"
 	"os"
 	"strings"
+	"database/sql"
 )
 
 var s *discordgo.Session
@@ -32,25 +32,51 @@ type result struct {
 	url, desc string
 }
 
+var db *sql.DB
+
 var banned = map[string]bool{}
-var bannedFile *os.File
 
 func main() {
-	token, err := ioutil.ReadFile("token")
-	if err != nil || string(token) == "" {
-		log.Fatalln("YOU FUCKED IT\nMAKE A `token` FILE")
+	//token, err := ioutil.ReadFile("token")
+	token := os.Getenv("TOKEN")
+	if token == "" {
+		log.Fatalln("MAKE A `token` FILE")
 	}
-	bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
+	var err error
+	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		panic(err)
 	}
-	scanner := bufio.NewScanner(bannedFile)
-	for scanner.Scan() {
-		banned[scanner.Text()] = true
+	if err := db.Ping(); err != nil {
+		panic(err)
 	}
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid string PRIMARY KEY)"); err != nil {
+		panic(err)
+	}
+	{
+		rows, err := db.Query("SELECT myid FROM store")
+		if err != nil {
+			panic(err)
+		}
+		for rows.Next() {
+			var x string
+			if err := rows.Scan(&x); err != nil {
+				panic(err)
+			}
+			banned[x] = true
+		}
+	}
+	//bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//scanner := bufio.NewScanner(bannedFile)
+	//for scanner.Scan() {
+	//	banned[scanner.Text()] = true
+	//}
 	s, err = discordgo.New("Bot " + string(token))
 	if err != nil {
-		panic("aww shit")
+		panic(err)
 	}
 	if err := s.Open(); err != nil {
 		panic(err)
@@ -102,8 +128,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
 			}
-			if _, err := bannedFile.WriteString(m.Mentions[0].ID + "\n"); err != nil {
-				s.ChannelMessageSend(m.ChannelID, "failed to write file. contact bot author.")
+			if _, err := db.Exec("INSERT INTO store VALUES ($1)", m.Mentions[0].ID); err != nil {
+				s.ChannelMessageSend(m.ChannelID, "failed to ban user. maybe they are already banned?")
 				return
 			}
 			banned[m.Mentions[0].ID] = true
