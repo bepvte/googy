@@ -146,6 +146,7 @@ func google(s string) ([]result, error) {
 	defer func() {
 		if e := recover(); e != nil {
 			log.Println("Panic detected, debug info as follows:\nPanic: " + spew.Sprint(e) + "\nResult: " + spew.Sprint(resp))
+      panic("aa")
 		}
 	}()
 	var results = []result{}
