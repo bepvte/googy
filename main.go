@@ -6,13 +6,14 @@ import (
 
 	"github.com/anaskhan96/soup"
 	"github.com/bwmarrin/discordgo"
+	"github.com/davecgh/go-spew/spew"
 
+	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
 	"net/url"
 	"os"
 	"strings"
-	"database/sql"
 )
 
 var s *discordgo.Session
@@ -142,6 +143,11 @@ func google(s string) ([]result, error) {
 	if err != nil {
 		return []result{}, errors.New("failed to reach google")
 	}
+	defer func() {
+		if e := recover(); e != nil {
+			spew.Println("Panic detected, debug info as follows:\nPanic: " + e + "\nResult: " + resp)
+		}
+	}()
 	var results = []result{}
 	root := soup.HTMLParse(resp)
 	for _, x := range root.FindAll("div", "class", "g") {
