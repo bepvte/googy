@@ -51,7 +51,7 @@ func main() {
 	if err := db.Ping(); err != nil {
 		panic(err)
 	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid text PRIMARY KEY)"); err != nil {
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid text` PRIMARY KEY)"); err != nil {
 		panic(err)
 	}
 	{
@@ -97,9 +97,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
 			trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
 			log.Println(trimmed)
+			defer func(){
+				e := recover()
+				if e != nil {
+					log.Println("Panic caught: ", spew.Sprint(e))
+					s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(e)+"\n``` ahh uhhh ahh ahh")
+				}
+			}()
 			result, err := google(trimmed)
 			if err != nil {
-				log.Println(err)
+				panic(err)
 			} else {
 				msg := result[0]
 				var resultSanitized []string
@@ -108,7 +115,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 				_, err := s.ChannelMessageSend(m.ChannelID, msg.url+" - ```"+msg.desc+"```"+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
 				if err != nil {
-					panic(err)
+					log.Println(err)
 				}
 				break
 			}
@@ -139,16 +146,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func google(s string) ([]result, error) {
+	if s == "panictest" {
+		panic(errors.New("fof"))
+	}
 	resp, err := soup.Get("https://www.google.com/search?q=" + url.QueryEscape(s))
 	if err != nil {
 		return []result{}, errors.New("failed to reach google")
 	}
-	defer func() {
-		if e := recover(); e != nil {
-			log.Println("Panic detected, debug info as follows:\nPanic: " + spew.Sprint(e) + "\nResult: " + spew.Sprint(resp))
-      panic("aa")
-		}
-	}()
 	var results = []result{}
 	root := soup.HTMLParse(resp)
 	for _, x := range root.FindAll("div", "class", "g") {
