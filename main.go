@@ -51,7 +51,7 @@ func main() {
 	if err := db.Ping(); err != nil {
 		panic(err)
 	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid text` PRIMARY KEY)"); err != nil {
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid text PRIMARY KEY)"); err != nil {
 		panic(err)
 	}
 	{
