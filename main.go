@@ -170,9 +170,9 @@ func google(s string) ([]result, error) {
 		if len(results) > 3 {
 			break
 		}
-		var buf bytes.Buffer
-		html.Render(&buf, x.Pointer)
-		log.Println(buf.String())
+		//var buf bytes.Buffer
+		//html.Render(&buf, x.Pointer)
+		//log.Println(buf.String())
 		if x.Attrs()["class"] != "g" {
 			continue
 		}
