@@ -176,8 +176,18 @@ func google(s string) ([]result, error) {
 		if x.Attrs()["class"] != "g" {
 			continue
 		}
-		linkTarget := x.Find("h3", "class", "r").Find("a")
-		descTarget := x.Find("span", "class", "st").Pointer
+		linkMom := x.Find("h3", "class", "r")
+		if linkMom.Error != nil {
+			log.Println(linkMom.Error)
+			continue
+		}
+		linkTarget := linkMom.Find("a")
+		descMom := x.Find("span", "class", "st")
+		if descMom.Error != nil {
+			log.Println(descMom.Error)
+			continue
+		}
+		descTarget := descMom.Pointer
 		var f func(*html.Node)
 		descList := []string{}
 		f = func(n *html.Node) {
