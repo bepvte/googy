@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"bytes"
 )
 
 var s *discordgo.Session
@@ -169,7 +170,9 @@ func google(s string) ([]result, error) {
 		if len(results) > 3 {
 			break
 		}
-		log.Println(x.Text())
+		var buf bytes.Buffer
+		html.Render(&buf, x.Pointer)
+		log.Println(buf.String())
 		if x.Attrs()["class"] != "g" {
 			continue
 		}
