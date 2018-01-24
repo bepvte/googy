@@ -152,7 +152,7 @@ func google(s string) ([]result, error) {
 	defer func(){
 		e := recover()
 		if e != nil {
-			log.Println("contents: "+ resp)
+			//log.Println("contents: "+ resp)
 			panic(e)
 		}
 	}()
@@ -168,6 +168,9 @@ func google(s string) ([]result, error) {
 	for _, x := range root.FindAll("div", "class", "g") {
 		if len(results) > 3 {
 			break
+		}
+		if x.Attrs()["class"] != "g" {
+			continue
 		}
 		linkTarget := x.Find("h3", "class", "r").Find("a")
 		descTarget := x.Find("span", "class", "st").Pointer
