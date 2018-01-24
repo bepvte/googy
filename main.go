@@ -33,6 +33,7 @@ type result struct {
 	url, desc string
 }
 
+
 var db *sql.DB
 
 var banned = map[string]bool{}
@@ -146,10 +147,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func google(s string) ([]result, error) {
+	var resp string
+	var err error
+	defer func(){
+		e := recover()
+		if e != nil {
+			log.Println("contents: "+ resp)
+			panic(e)
+		}
+	}()
 	if s == "panictest" {
 		panic(errors.New("fof"))
 	}
-	resp, err := soup.Get("https://www.google.com/search?q=" + url.QueryEscape(s))
+	resp, err = soup.Get("https://www.google.com/search?q=" + url.QueryEscape(s))
 	if err != nil {
 		return []result{}, errors.New("failed to reach google")
 	}
