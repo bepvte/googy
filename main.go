@@ -14,7 +14,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"bytes"
 )
 
 var s *discordgo.Session
