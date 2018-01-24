@@ -169,7 +169,7 @@ func google(s string) ([]result, error) {
 		if len(results) > 3 {
 			break
 		}
-		log.Println(x.Attrs()["class"])
+		log.Println(x.Text())
 		if x.Attrs()["class"] != "g" {
 			continue
 		}
