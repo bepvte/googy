@@ -109,6 +109,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case strings.ToLower(m.Content) == "$pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
+	case strings.ToLower(m.Content) == "$joinem":
+		s.ChannelMessageSend(m.ChannelID, "<a:joinem:394764206756593664>")
 	case strings.HasPrefix(strings.ToLower(m.Content), "$botban"):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
@@ -128,6 +130,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case strings.HasPrefix(strings.ToLower(m.Content), "$ocr"):
 		ocr(s, m)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$help"):
+		s.ChannelMessageSend(m.ChannelID, "yerm")
 	}
-
 }
