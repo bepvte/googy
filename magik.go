@@ -83,5 +83,4 @@ func magick(m *discordgo.MessageCreate, s *discordgo.Session) {
 	//hWidth := uint(width / 2)
 	//hHeight := uint(height / 2)
 
-
 }
