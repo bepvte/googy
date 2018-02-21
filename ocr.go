@@ -16,24 +16,23 @@ import (
 	"strings"
 )
 
-var ocrcl *tesseract.Tess
 
-func ocrInit() {
+func ocrInit() *tesseract.Tess {
 	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
 	if tessdata_prefix == "" {
 		tessdata_prefix = "/usr/share/tesseract-ocr/tessdata"
 	}
-	var err error
-	ocrcl, err = tesseract.NewTess(tessdata_prefix, "eng")
+	ocrcl, err := tesseract.NewTess(tessdata_prefix, "eng")
 	if err != nil {
-		log.Fatalf("Error while initializing Tess: %s\n", err)
+		panic("Error while initializing Tess: "+ err.Error())
 	}
 	// setup a whitelist of all basic ascii
 	err = ocrcl.SetVariable("tessedit_char_whitelist", ` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~`+"`")
 	if err != nil {
-		log.Fatalf("Failed to SetVariable: %s\n", err)
+		panic("Failed to SetVariable: "+err.Error())
 	}
 
+	return ocrcl
 }
 
 func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -49,13 +48,9 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	} else if len(strings.Split(m.Content, " ")) == 2 {
 		earliestUrl = strings.Split(m.Content, " ")[1]
 		if _, err := url.ParseRequestURI(earliestUrl); err != nil {
-			//this block gets copy pasted like twenty times bc im lazy and bad
-			if _, err := s.ChannelMessageSend(m.ChannelID, "The url you put next to '$ocr' is invalid."); err != nil {
-				panic(err)
-			}
+		s.ChannelMessageSend(m.ChannelID, "The url you put next to '$ocr' is invalid.")
 			return
 		}
-		log.Println(earliestUrl)
 	} else {
 		msgs, err := s.ChannelMessages(m.ChannelID, 100, m.ID, "", "")
 		if err != nil {
@@ -65,14 +60,13 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 			u := getUrl(x)
 			if u != "" {
 				earliestUrl = u
+				log.Println(u)
 				break
 			}
 		}
 	}
 	if earliestUrl == "" {
-		if _, err := s.ChannelMessageSend(m.ChannelID, "I cant see any images posted as direct links or attachments in the last 30 messages, and your command didnt include a url or attachment!"); err != nil {
-			panic(err)
-		}
+		 s.ChannelMessageSend(m.ChannelID, "Your command didnt include a url or attachment!")
 		return
 	}
 
@@ -86,16 +80,12 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	resp, err := http.Get(earliestUrl)
 	if err != nil {
 		log.Println("[OCR] Couldnt get: ", earliestUrl)
-		if err := s.MessageReactionAdd(m.ChannelID, m.ID, "❌"); err != nil {
-			panic(err)
-		}
+		s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 		return
 	}
 	if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
 		log.Println(resp.Request.URL)
-		if _, err := s.ChannelMessageSend(m.ChannelID, "The link wont work..."); err != nil {
-			panic(err)
-		}
+		s.ChannelMessageSend(m.ChannelID, "The link wont work...")
 		return
 	}
 	io.Copy(tmpfile, resp.Body)
@@ -104,18 +94,21 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	pix, err := leptonica.NewPixFromFile(filepath.Join(wd, tmpfile.Name()))
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "that image couldnt process....")
+		return
 	}
 	defer pix.Close() // remember to cleanup
+
+	ocrcl := ocrInit()
+	defer ocrcl.Close()
 
 	ocrcl.SetImagePix(pix)
 
 	if err != nil {
-		log.Println("[OCR] error with ocr: ", err)
-		if _, err := s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```"); err != nil {
-			panic(err)
-		}
+		log.Println("[OCR] error: ", err)
+		s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
+		return
 	}
-		s.ChannelMessageSend(m.ChannelID, ocrcl.Text())
+	s.ChannelMessageSend(m.ChannelID, ocrcl.Text())
 }
 
 func getUrl(x *discordgo.Message) string {

@@ -63,6 +63,8 @@ func main() {
 	}
 	s.AddHandler(messageCreate)
 
+	//magickInit()
+
 	ocrInit()
 
 	log.Println("We goin")
