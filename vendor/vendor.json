@@ -33,7 +33,7 @@
 			"revisionTime": "2018-02-01T18:47:07Z"
 		},
 		{
-			"checksumSHA1": "ATnwV0POluBNQEMjPdylodz0oK0=",
+			"checksumSHA1": "AU3fA8Sm33Vj9PBoRPSeYfxLRuE=",
 			"path": "github.com/lib/pq/oid",
 			"revision": "88edab0803230a3898347e77b474f8c1820a1f20",
 			"revisionTime": "2018-02-01T18:47:07Z"
@@ -63,10 +63,22 @@
 			"revisionTime": "2018-02-18T17:15:52Z"
 		},
 		{
-			"checksumSHA1": "RLqClvtTLYRcgfKnfLcCnHNvv2Y=",
+			"checksumSHA1": "NvlH++AI8+25Z2Vs8WKxLVCNrxo=",
 			"path": "golang.org/x/net/html/atom",
 			"revision": "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb",
 			"revisionTime": "2018-02-18T17:15:52Z"
+		},
+		{
+			"checksumSHA1": "DnvGQv2LyqIriZgkyO20nEHl9yc=",
+			"path": "gopkg.in/GeertJohan/go.leptonica.v1",
+			"revision": "69e757e167e06ea58a8125180cde3ce5acbffe6e",
+			"revisionTime": "2014-10-28T10:55:04Z"
+		},
+		{
+			"checksumSHA1": "jeloBdpaRyuFqduFE7xuuedhIcY=",
+			"path": "gopkg.in/GeertJohan/go.tesseract.v1",
+			"revision": "b5aa24edea39fb1dde5758ae65f68b8af2f5e6d6",
+			"revisionTime": "2014-10-20T12:55:20Z"
 		}
 	],
 	"rootPath": "github.com/redg3ar/googy"

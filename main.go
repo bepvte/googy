@@ -1,38 +1,16 @@
 package main
 
 import (
-	"errors"
-	"golang.org/x/net/html"
-
-	"github.com/anaskhan96/soup"
+	"database/sql"
 	"github.com/bwmarrin/discordgo"
 	"github.com/davecgh/go-spew/spew"
-
-	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
-	"net/url"
 	"os"
 	"strings"
 )
 
 var s *discordgo.Session
-
-var prefixes = []string{
-	"ok google",
-	"okay google",
-	"hey google",
-	"$google",
-	"$g",
-	"ok googy",
-	"okay googy",
-	"hey googy",
-}
-
-type result struct {
-	url, desc string
-}
-
 
 var db *sql.DB
 
@@ -85,6 +63,9 @@ func main() {
 	}
 	s.AddHandler(messageCreate)
 
+	ocrInit()
+
+	log.Println("We goin")
 	c := make(chan interface{})
 	<-c
 }
@@ -93,40 +74,40 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID || m.Author.Bot || banned[m.Author.ID] {
 		return
 	}
-	var trimmed string
-	for x := range prefixes {
-		if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
-			trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
-			log.Println(trimmed)
-			defer func(){
-				e := recover()
-				if e != nil {
-					log.Println("Panic caught: ", spew.Sprint(e))
-					s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(e)+"\n``` ahh uhhh ahh ahh")
-				}
-			}()
-			result, err := google(trimmed)
-			if err != nil {
-				panic(err)
-			} else {
-				msg := result[0]
-				var resultSanitized []string
-				for _, x := range result[1:] {
-					resultSanitized = append(resultSanitized, "<"+x.url+">")
-				}
-				_, err := s.ChannelMessageSend(m.ChannelID, msg.url+" - ```"+msg.desc+"```"+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
+	switch {
+	default:
+		var trimmed string
+		for x := range prefixes {
+			if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
+				trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
+				log.Println(trimmed)
+				defer func() {
+					e := recover()
+					if e != nil {
+						log.Println("Panic caught: ", spew.Sprint(e))
+						s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(e)+"\n``` ahh uhhh ahh ahh")
+					}
+				}()
+				result, err := google(trimmed)
 				if err != nil {
-					log.Println(err)
+					panic(err)
+				} else {
+					msg := result[0]
+					var resultSanitized []string
+					for _, x := range result[1:] {
+						resultSanitized = append(resultSanitized, "<"+x.url+">")
+					}
+					_, err := s.ChannelMessageSend(m.ChannelID, msg.url+" - ```"+msg.desc+"```"+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
+					if err != nil {
+						log.Println(err)
+					}
+					break
 				}
-				break
 			}
 		}
-	}
-	if strings.ToLower(m.Content) == "$pacman" {
+	case strings.ToLower(m.Content) == "$pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
-		return
-	}
-	if strings.HasPrefix(strings.ToLower(m.Content), "$botban") {
+	case strings.HasPrefix(strings.ToLower(m.Content), "$botban"):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
@@ -143,70 +124,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			banned[m.Mentions[0].ID] = true
 		}
+	case strings.HasPrefix(strings.ToLower(m.Content), "$ocr"):
+		ocr(s, m)
 	}
-}
 
-func google(s string) ([]result, error) {
-	var resp string
-	var err error
-	defer func(){
-		e := recover()
-		if e != nil {
-			//log.Println("contents: "+ resp)
-			panic(e)
-		}
-	}()
-	if s == "panictest" {
-		panic(errors.New("fof"))
-	}
-	resp, err = soup.Get("https://www.google.com/search?q=" + url.QueryEscape(s))
-	if err != nil {
-		return []result{}, errors.New("failed to reach google")
-	}
-	var results = []result{}
-	root := soup.HTMLParse(resp)
-	for _, x := range root.FindAll("div", "class", "g") {
-		if len(results) > 3 {
-			break
-		}
-		//var buf bytes.Buffer
-		//html.Render(&buf, x.Pointer)
-		//log.Println(buf.String())
-		if x.Attrs()["class"] != "g" {
-			continue
-		}
-		linkMom := x.Find("h3", "class", "r")
-		if linkMom.Error != nil {
-			log.Println(linkMom.Error)
-			continue
-		}
-		linkTarget := linkMom.Find("a")
-		descMom := x.Find("span", "class", "st")
-		if descMom.Error != nil {
-			log.Println(descMom.Error)
-			continue
-		}
-		descTarget := descMom.Pointer
-		var f func(*html.Node)
-		descList := []string{}
-		f = func(n *html.Node) {
-			if n != nil && n.Type == html.TextNode {
-				if n.Data != "\n" {
-					descList = append(descList, n.Data)
-				}
-			}
-			if n != nil {
-				for c := n.FirstChild; c != nil; c = c.NextSibling {
-					f(c)
-				}
-			}
-		}
-		f(descTarget)
-
-		if strings.HasPrefix(linkTarget.Attrs()["href"], "/url?") {
-			toTrim, _ := url.Parse("https://www.google.com" + linkTarget.Attrs()["href"])
-			results = append(results, result{toTrim.Query().Get("q"), strings.Join(descList, " ")})
-		}
-	}
-	return results, nil
 }
