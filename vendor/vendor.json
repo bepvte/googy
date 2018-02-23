@@ -79,6 +79,78 @@
 			"path": "gopkg.in/GeertJohan/go.tesseract.v1",
 			"revision": "b5aa24edea39fb1dde5758ae65f68b8af2f5e6d6",
 			"revisionTime": "2014-10-20T12:55:20Z"
+		},
+		{
+			"checksumSHA1": "iKCePvfjSpKe8teI1mDqVFs8luE=",
+			"path": "gopkg.in/gographics/imagick.v2/imagick",
+			"revision": "589a8ef16fd4f08a29ad26afe5c33fb5673e4efc",
+			"revisionTime": "2018-01-10T21:09:39Z"
+		},
+		{
+			"checksumSHA1": "p7P9LxMill4wwy1lFJZ2odCLOh4=",
+			"path": "gopkg.in/gographics/imagick.v2/imagick/types",
+			"revision": "589a8ef16fd4f08a29ad26afe5c33fb5673e4efc",
+			"revisionTime": "2018-01-10T21:09:39Z"
+		},
+		{
+			"checksumSHA1": "4LUxo6rjB3R+j6QYxYRFvv6kuVY=",
+			"path": "upper.io/db.v3",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "i2maYYRSi6bkkfzu97ZZzUhCcjc=",
+			"path": "upper.io/db.v3/internal/cache",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "ToEr+HdfxxNijLEKeW4mEs8lHl0=",
+			"path": "upper.io/db.v3/internal/cache/hashstructure",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "urKOk7QFZYcplp6Dn+JMdy9wXqU=",
+			"path": "upper.io/db.v3/internal/immutable",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "n5569TY4UMlKN80rTqzRpkzWmlQ=",
+			"path": "upper.io/db.v3/internal/sqladapter",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "yNnqV3KGFTos+DtGyGk39cyiCps=",
+			"path": "upper.io/db.v3/internal/sqladapter/compat",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "fQ03zAmNtK5sJS8e09jif67AyfY=",
+			"path": "upper.io/db.v3/internal/sqladapter/exql",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "vww4sGRzU4GjJUklTPEX3b+BKZo=",
+			"path": "upper.io/db.v3/lib/reflectx",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "MYaiZ6XttP90O14X0wEV6YYUkU8=",
+			"path": "upper.io/db.v3/lib/sqlbuilder",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
+		},
+		{
+			"checksumSHA1": "J2HseMqTTvHhaumZMB9xdpfGnas=",
+			"path": "upper.io/db.v3/postgresql",
+			"revision": "bba00b389f7e9cfdd8988e08c2832ab39119d7cf",
+			"revisionTime": "2018-02-11T22:07:03Z"
 		}
 	],
 	"rootPath": "github.com/redg3ar/googy"

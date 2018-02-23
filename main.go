@@ -1,18 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"github.com/bwmarrin/discordgo"
-	"github.com/davecgh/go-spew/spew"
-	_ "github.com/lib/pq"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/davecgh/go-spew/spew"
+	_ "github.com/lib/pq"
+	"upper.io/db.v3/lib/sqlbuilder"
+	"upper.io/db.v3/postgresql"
 )
 
 var s *discordgo.Session
 
-var db *sql.DB
+var database sqlbuilder.Database
 
 var banned = map[string]bool{}
 
@@ -22,19 +25,22 @@ func main() {
 	if token == "" {
 		log.Fatalln("MAKE A `token` FILE")
 	}
-	var err error
-	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	u, err := postgresql.ParseURL(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		panic(err)
 	}
-	if err := db.Ping(); err != nil {
+	database, err = postgresql.Open(u)
+	if err != nil {
 		panic(err)
 	}
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS store (myid text PRIMARY KEY)"); err != nil {
+	// database.SetLogging(true)
+
+	file, _ := ioutil.ReadFile("perms.sql")
+	if _, err := database.Exec(string(file)); err != nil {
 		panic(err)
 	}
 	{
-		rows, err := db.Query("SELECT myid FROM store")
+		rows, err := database.Query("SELECT myid FROM store")
 		if err != nil {
 			panic(err)
 		}
@@ -63,8 +69,6 @@ func main() {
 	}
 	s.AddHandler(messageCreate)
 
-	//magickInit()
-
 	ocrInit()
 
 	log.Println("We goin")
@@ -81,8 +85,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		var trimmed string
 		for x := range prefixes {
 			if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]) {
+
 				trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]):], ",")) // trimmed it wowow
 				log.Println(trimmed)
+				if permCheck(s, m, "google") {
+					return
+				}
 				defer func() {
 					e := recover()
 					if e != nil {
@@ -122,15 +130,27 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, "$botban <usermention>")
 				return
 			}
-			if _, err := db.Exec("INSERT INTO store VALUES ($1)", m.Mentions[0].ID); err != nil {
+			if _, err := database.Exec("INSERT INTO store VALUES ($1)", m.Mentions[0].ID); err != nil {
 				s.ChannelMessageSend(m.ChannelID, "failed to ban user. maybe they are already banned?")
 				return
 			}
 			banned[m.Mentions[0].ID] = true
 		}
 	case strings.HasPrefix(strings.ToLower(m.Content), "$ocr"):
-		ocr(s, m)
+		permWrap(s, m, "ocr", ocr)
 	case strings.HasPrefix(strings.ToLower(m.Content), "$help"):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
+	case strings.HasPrefix(strings.ToLower(m.Content), "$add"):
+		permAdd(s, m)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$perms"):
+		permList(s, m)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$del"):
+		permDel(s, m)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$magick"):
+		permWrap(s, m, "magick", magick)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$squish"):
+		permWrap(s, m, "magick", squish)
+	case strings.HasPrefix(strings.ToLower(m.Content), "$squosh"):
+		permWrap(s, m, "magick", squosh)
 	}
 }

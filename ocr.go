@@ -3,15 +3,16 @@
 package main
 
 import (
-	"github.com/bwmarrin/discordgo"
-	"gopkg.in/GeertJohan/go.leptonica.v1"
-	"gopkg.in/GeertJohan/go.tesseract.v1"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
+	"gopkg.in/GeertJohan/go.leptonica.v1"
+	"gopkg.in/GeertJohan/go.tesseract.v1"
 )
 
 const ocrTimeout = time.Second * 10
