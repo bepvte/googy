@@ -27,7 +27,6 @@ type permrule struct { //where is where the perm takes place, what is on what co
 	Where    string `db:"where"`
 	What     string `db:"what"`
 	Type     int    `db:"type"`
-	Comment  string `db:"comment"`
 	Guild    string `db:"guild"`
 }
 
@@ -66,7 +65,7 @@ func permCheck(s *discordgo.Session, m *discordgo.MessageCreate, what string) bo
 
 	res := database.Collection("perms").Find(db.And(db.Cond{"guild": c.GuildID}, conds))
 
-	res.OrderBy("priority")
+	res.OrderBy("-priority")
 
 	var state bool
 	var rule permrule
@@ -84,9 +83,9 @@ func permWrap(s *discordgo.Session, m *discordgo.MessageCreate, what string, cal
 	}
 }
 
-const permusage = "Couldnt understand that\n`$add command [enabled|disabled] [priority] [comment] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
+const permusage = "Couldnt understand that\n`$add command [enabled|disabled] [priority] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
 
-//												  1	         2                3          4			5
+//												  1	         2                3    		4
 func permAdd(s *discordgo.Session, m *discordgo.MessageCreate) {
 	userperm, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 	if !(userperm&discordgo.PermissionManageRoles != 0 || m.Author.ID == "147077474222604288") {
@@ -98,7 +97,7 @@ func permAdd(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sv := csv.NewReader(strings.NewReader(m.Content))
 	sv.Comma = ' '
 	parsed, err := sv.Read()
-	if err != nil || len(parsed) < 4 {
+	if err != nil || len(parsed) < 3 {
 		s.ChannelMessageSend(m.ChannelID, permusage)
 		return
 	}
@@ -130,7 +129,6 @@ func permAdd(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Priority: priority,
 		State:    state,
 		What:     parsed[1],
-		Comment:  parsed[4],
 		Guild:    c.GuildID,
 	}
 	channelMatches := channelregex.FindStringSubmatch(m.Content)
@@ -170,7 +168,7 @@ func permList(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	var buf bytes.Buffer
 	writ := tabwriter.NewWriter(&buf, 15, 0, 2, ' ', tabwriter.AlignRight)
-	fmt.Fprintln(writ, "```csv\nTarget\tCommand\tState\tPriority\tType\tComment\t")
+	fmt.Fprintln(writ, "```csv\nTarget\tCommand\tState\tPriority\tType\t")
 
 	var rule permrule
 	for res.Next(&rule) {
@@ -191,7 +189,7 @@ func permList(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else {
 			sstate = "enabled"
 		}
-		fmt.Fprintf(writ, "%v\t%v\t%v\t%v\t%v\t%v\t\n", rule.Where, rule.What, sstate, rule.Priority, stype, rule.Comment)
+		fmt.Fprintf(writ, "%v\t%v\t%v\t%v\t%v\t\n", rule.Where, rule.What, sstate, rule.Priority, stype)
 	}
 	fmt.Fprintln(writ, "\n```")
 	writ.Flush()

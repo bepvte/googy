@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS "perms" (
   "where" text not null,
   "what" text not null,
   "type" int not null,
-  "comment" text not null,
   "guild" text not null
 );
 
