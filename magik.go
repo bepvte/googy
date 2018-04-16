@@ -33,7 +33,11 @@ func magick(s *discordgo.Session, m *discordgo.MessageCreate) {
 	hWidth := uint(width / 2)
 	hHeight := uint(height / 2)
 	msg, _ := s.ChannelMessageSend(m.ChannelID, "Working...")
-	if err := mw.LiquidRescaleImage(hHeight, hWidth, 0, 0); err != nil {
+	if err := mw.LiquidRescaleImage(hHeight, hWidth, 1, 0); err != nil {
+		log.Println("[MAGICK] ", err)
+		return
+	}
+	if err := mw.LiquidRescaleImage(uint(float32(hHeight)*1.5), uint(float32(hWidth)*1.5), 2, 0); err != nil {
 		log.Println("[MAGICK] ", err)
 		return
 	}
@@ -65,10 +69,15 @@ func squish(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	hWidth := uint(width / 2)
 	msg, _ := s.ChannelMessageSend(m.ChannelID, "Working...")
-	if err := mw.LiquidRescaleImage(height, hWidth, 0, 0); err != nil {
+	if err := mw.LiquidRescaleImage(height, hWidth, 1, 0); err != nil {
 		log.Println("[MAGICK] ", err)
 		return
 	}
+	if err := mw.LiquidRescaleImage(uint(float32(height)*1.5), uint(float32(hWidth)*1.5), 2, 0); err != nil {
+		log.Println("[MAGICK] ", err)
+		return
+	}
+
 
 	res := mw.GetImageBlob()
 	s.ChannelMessageDelete(m.ChannelID, msg.ID)
@@ -97,7 +106,11 @@ func squosh(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	hHeight := uint(height / 2)
 	msg, _ := s.ChannelMessageSend(m.ChannelID, "Working...")
-	if err := mw.LiquidRescaleImage(hHeight, width, 0, 0); err != nil {
+	if err := mw.LiquidRescaleImage(hHeight, width, 1, 0); err != nil {
+		log.Println("[MAGICK] ", err)
+		return
+	}
+	if err := mw.LiquidRescaleImage(uint(float32(hHeight)*1.5), uint(float32(width)*1.5), 2, 0); err != nil {
 		log.Println("[MAGICK] ", err)
 		return
 	}
