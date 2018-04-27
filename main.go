@@ -157,5 +157,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		permWrap(s, m, "magick", squish)
 	case strings.HasPrefix(strings.ToLower(m.Content), "&squosh"):
 		permWrap(s, m, "magick", squosh)
+	case strings.HasPrefix(strings.ToLower(m.Content), "&knuckles"):
+		s.ChannelMessageSend(m.ChannelID, "CHUCKLES")
 	}
 }
