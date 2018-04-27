@@ -40,7 +40,7 @@ func meme(s *discordgo.Session, m *discordgo.MessageCreate) {
 	} else if len(parsed) == 4 {
 		earliestUrl = parsed[3]
 		if _, err := url.ParseRequestURI(earliestUrl); err != nil {
-			s.ChannelMessageSend(m.ChannelID, "The url you put next to '$meme' is invalid.")
+			s.ChannelMessageSend(m.ChannelID, "The url you put next to '&meme' is invalid.")
 			return
 		}
 	} else {
