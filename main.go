@@ -18,7 +18,7 @@ var s *discordgo.Session
 var database sqlbuilder.Database
 
 var banned = map[string]bool{}
-
+const prefix = "$"
 func main() {
 	//token, err := ioutil.ReadFile("token")
 	token := os.Getenv("TOKEN")
@@ -116,15 +116,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 			}
 		}
-	case strings.HasPrefix(strings.ToLower(m.Content), "$google "):
+	case strings.HasPrefix(strings.ToLower(m.Content), "&google "):
 		fallthrough
-	case strings.HasPrefix(strings.ToLower(m.Content), "$g "):
-		s.ChannelMessageSend(m.ChannelID, "its & not $ now dipshit")
-	case strings.ToLower(m.Content) == "&pacman":
+	case strings.HasPrefix(strings.ToLower(m.Content), "&g "):
+		s.ChannelMessageSend(m.ChannelID, "its "+prefix+" not & now dipshit")
+	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
-	case strings.ToLower(m.Content) == "&joinem":
+	case strings.ToLower(m.Content) == prefix+"joinem":
 		s.ChannelMessageSend(m.ChannelID, "<a:joinem:394764206756593664>")
-	case strings.HasPrefix(strings.ToLower(m.Content), "&botban"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"botban"):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
@@ -132,7 +132,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		if (permissions&discordgo.PermissionBanMembers) > 0 || m.Author.ID == "147077474222604288" {
 			if len(m.Mentions) != 1 {
-				s.ChannelMessageSend(m.ChannelID, "&botban <usermention>")
+				s.ChannelMessageSend(m.ChannelID, prefix+"botban <usermention>")
 				return
 			}
 			if _, err := database.Exec("INSERT INTO store VALUES ($1)", m.Mentions[0].ID); err != nil {
@@ -141,23 +141,23 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			banned[m.Mentions[0].ID] = true
 		}
-	case strings.HasPrefix(strings.ToLower(m.Content), "&ocr"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"ocr"):
 		permWrap(s, m, "ocr", ocr)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&help"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"help"):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
-	case strings.HasPrefix(strings.ToLower(m.Content), "&add"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"add"):
 		permAdd(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&perms"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"perms"):
 		permList(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&del"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"del"):
 		permDel(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&magick"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
 		permWrap(s, m, "magick", magick)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&squish"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squish"):
 		permWrap(s, m, "magick", squish)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&squosh"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squosh"):
 		permWrap(s, m, "magick", squosh)
-	case strings.HasPrefix(strings.ToLower(m.Content), "&knuckles"):
+	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"knuckles"):
 		s.ChannelMessageSend(m.ChannelID, "CHUCKLES")
 	}
 }
