@@ -13,7 +13,7 @@ func magickInit() {
 }
 
 func magick(s *discordgo.Session, m *discordgo.MessageCreate) {
-	r := getImage(m, s, "[MAGICK]", "&magick")
+	r := getImage(m, s, "[MAGICK]", prefix+"magick")
 	if r == nil {
 		return
 	}
@@ -50,7 +50,7 @@ func magick(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 func squish(s *discordgo.Session, m *discordgo.MessageCreate) {
-	r := getImage(m, s, "[MAGICK]", "&magick")
+	r := getImage(m, s, "[MAGICK]", prefix+"magick")
 	if r == nil {
 		return
 	}
@@ -87,7 +87,7 @@ func squish(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 func squosh(s *discordgo.Session, m *discordgo.MessageCreate) {
-	r := getImage(m, s, "[MAGICK]", "&magick")
+	r := getImage(m, s, "[MAGICK]", prefix+"magick")
 	if r == nil {
 		return
 	}

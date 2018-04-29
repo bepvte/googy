@@ -83,7 +83,7 @@ func permWrap(s *discordgo.Session, m *discordgo.MessageCreate, what string, cal
 	}
 }
 
-const permusage = "Couldnt understand that\n`&add command [enabled|disabled] [priority] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
+const permusage = "Couldnt understand that\n`"+prefix+"add command [enabled|disabled] [priority] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
 
 //												  1	         2                3    		4
 func permAdd(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -206,7 +206,7 @@ func permDel(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	t := strings.Split(m.Content, " ")
 	if len(t) < 2 {
-		s.ChannelMessageSend(m.ChannelID, "&del <command>")
+		s.ChannelMessageSend(m.ChannelID, prefix+"del <command>")
 		return
 	}
 	c, err := s.State.Channel(m.ChannelID)
