@@ -68,7 +68,7 @@ func main() {
 		panic(err)
 	}
 	s.AddHandler(messageCreate)
-	s.UpdateStatus(0, "Its & not $ now")
+	s.UpdateStatus(0, "Its $ not & now")
 
 	ocrInit()
 
@@ -151,12 +151,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		permList(s, m)
 	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"del"):
 		permDel(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
-		permWrap(s, m, "magick", magick)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squish"):
-		permWrap(s, m, "magick", squish)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squosh"):
-		permWrap(s, m, "magick", squosh)
+	//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
+	//	permWrap(s, m, "magick", magick)
+	//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squish"):
+	//	permWrap(s, m, "magick", squish)
+	//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squosh"):
+	//	permWrap(s, m, "magick", squosh)
 	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"knuckles"):
 		s.ChannelMessageSend(m.ChannelID, "CHUCKLES")
 	}
