@@ -1,6 +1,6 @@
-FROM golang:1.10-stretch
+FROM golang:1.9-alpine
 
-RUN apt-get update && apt-get install -y libtesseract-dev libleptonica-dev tesseract-ocr-eng && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache tesseract-ocr-dev leptonica-dev build-base
 
 WORKDIR /go/src/googy
 COPY . .

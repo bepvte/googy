@@ -20,7 +20,7 @@ const ocrTimeout = time.Second * 10
 func ocrInit() *tesseract.Tess {
 	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
 	if tessdata_prefix == "" {
-		tessdata_prefix = "/usr/share/tesseract-ocr/tessdata"
+		tessdata_prefix = "/usr/share/tessdata"
 	}
 	ocrcl, err := tesseract.NewTess(tessdata_prefix, "eng")
 	if err != nil {
