@@ -46,16 +46,12 @@
   name = "github.com/lib/pq"
 
 [[constraint]]
+  name = "github.com/otiai10/gosseract"
+  branch = "master"
+
+[[constraint]]
   branch = "master"
   name = "golang.org/x/net"
-
-[[constraint]]
-  branch = "v1"
-  name = "gopkg.in/GeertJohan/go.leptonica.v1"
-
-[[constraint]]
-  branch = "v1"
-  name = "gopkg.in/GeertJohan/go.tesseract.v1"
 
 [[constraint]]
   name = "gopkg.in/gographics/imagick.v2"

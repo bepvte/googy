@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname string) io.ReadCloser {

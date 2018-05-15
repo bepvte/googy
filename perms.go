@@ -5,12 +5,13 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/bwmarrin/discordgo"
 	"upper.io/db.v3"
 )
 
@@ -83,7 +84,7 @@ func permWrap(s *discordgo.Session, m *discordgo.MessageCreate, what string, cal
 	}
 }
 
-const permusage = "Couldnt understand that\n`"+prefix+"add command [enabled|disabled] [priority] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
+const permusage = "Couldnt understand that\n`" + prefix + "add command [enabled|disabled] [priority] [channel-mention|role-mention|user-mention|leave blank for serverwide]`"
 
 //												  1	         2                3    		4
 func permAdd(s *discordgo.Session, m *discordgo.MessageCreate) {
