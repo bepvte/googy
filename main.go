@@ -18,7 +18,9 @@ var s *discordgo.Session
 var database sqlbuilder.Database
 
 var banned = map[string]bool{}
+
 const prefix = "$"
+
 func main() {
 	//token, err := ioutil.ReadFile("token")
 	token := os.Getenv("TOKEN")
@@ -108,7 +110,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					for _, x := range result[1:] {
 						resultSanitized = append(resultSanitized, "<"+x.url+">")
 					}
-					_, err := s.ChannelMessageSend(m.ChannelID, msg.url+" - ```"+msg.desc+"```"+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
+					var desc string
+					if msg.desc != "" {
+						desc = "```" + msg.desc + "```"
+					}
+					_, err := s.ChannelMessageSend(m.ChannelID, msg.url+desc+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
 					if err != nil {
 						log.Println(err)
 					}

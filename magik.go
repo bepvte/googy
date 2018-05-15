@@ -4,10 +4,11 @@ package main
 
 import (
 	"bytes"
-	"github.com/bwmarrin/discordgo"
-	"gopkg.in/gographics/imagick.v2/imagick"
 	"io"
 	"log"
+
+	"github.com/bwmarrin/discordgo"
+	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
 func magickInit() {
@@ -79,7 +80,6 @@ func squish(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Println("[MAGICK] ", err)
 		return
 	}
-
 
 	res := mw.GetImageBlob()
 	s.ChannelMessageDelete(m.ChannelID, msg.ID)

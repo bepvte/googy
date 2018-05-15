@@ -7,8 +7,6 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/fogleman/gg"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
@@ -17,6 +15,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/fogleman/gg"
 )
 
 func meme(s *discordgo.Session, m *discordgo.MessageCreate) {

@@ -3,35 +3,32 @@
 package main
 
 import (
+	"bytes"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"gopkg.in/GeertJohan/go.leptonica.v1"
-	"gopkg.in/GeertJohan/go.tesseract.v1"
+	"github.com/otiai10/gosseract"
 )
 
 const ocrTimeout = time.Second * 10
 
-func ocrInit() *tesseract.Tess {
+func ocrInit() *gosseract.Client {
+	ocrcl := gosseract.NewClient()
+	ocrcl.Languages = []string{"osd", "eng"}
+	t := gosseract.PSM_AUTO_OSD
+	ocrcl.PageSegMode = &t
+
 	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
 	if tessdata_prefix == "" {
-		tessdata_prefix = "/usr/share/tessdata"
-	}
-	ocrcl, err := tesseract.NewTess(tessdata_prefix, "eng")
-	if err != nil {
-		panic("Error while initializing Tess: " + err.Error())
-	}
-	// setup a whitelist of all basic ascii
-	err = ocrcl.SetVariable("tessedit_char_whitelist", ` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~`+"`")
-	if err != nil {
-		panic("Failed to SetVariable: " + err.Error())
+		p := "/usr/share/tessdata/" //this sucks fuck u golang
+		ocrcl.TessdataPrefix = &p
 	}
 
+	// setup a whitelist of all basic ascii
+	ocrcl.SetWhitelist(` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~` + "`")
 	return ocrcl
 }
 
@@ -45,36 +42,25 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if checkTimeout(c, m, s) {
 		return
 	}
-	wd, _ := os.Getwd()
 
-	tmpfile, err := ioutil.TempFile(wd, "googy-")
-	if err != nil {
-		panic(err)
-	}
-	defer os.Remove(tmpfile.Name())
-	io.Copy(tmpfile, resp)
+	var buf bytes.Buffer
 
-	pix, err := leptonica.NewPixFromFile(filepath.Join(wd, tmpfile.Name()))
-	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, "that image couldnt process....")
-		return
-	}
-	defer pix.Close() // remember to cleanup
+	io.Copy(&buf, resp)
 
 	ocrcl := ocrInit()
 	defer ocrcl.Close()
 
-	ocrcl.SetImagePix(pix)
+	ocrcl.SetImageFromBytes(buf.Bytes())
 	if checkTimeout(c, m, s) {
 		return
 	}
 
-	if err != nil {
-		log.Println("[OCR] error: ", err)
-		s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
-		return
-	}
-	t := ocrcl.Text()
+	t, err := ocrcl.Text()
+  if err != nil {
+    log.Println("[OCR] error: ", err)
+    s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
+    return
+  }
 	if t == "" {
 		s.ChannelMessageSend(m.ChannelID, "nothing found")
 

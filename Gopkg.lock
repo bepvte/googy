@@ -51,6 +51,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/otiai10/gosseract"
+  packages = ["."]
+  revision = "f2033d7d95801cd99e8c748faa0cf57553086fd2"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = [
     "nacl/secretbox",
@@ -78,18 +84,6 @@
     "html/atom"
   ]
   revision = "2491c5de3490fced2f6cff376127c667efeed857"
-
-[[projects]]
-  branch = "v1"
-  name = "gopkg.in/GeertJohan/go.leptonica.v1"
-  packages = ["."]
-  revision = "69e757e167e06ea58a8125180cde3ce5acbffe6e"
-
-[[projects]]
-  branch = "v1"
-  name = "gopkg.in/GeertJohan/go.tesseract.v1"
-  packages = ["."]
-  revision = "b5aa24edea39fb1dde5758ae65f68b8af2f5e6d6"
 
 [[projects]]
   name = "gopkg.in/gographics/imagick.v2"
@@ -120,6 +114,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f503f9da86f0ac8ad2b96d5f03f7bf20c15f7daf54b1848ff6c9c2e886961b93"
+  inputs-digest = "2051b9c90d2c24e21c8c36b780175156929cfd1a196eb491b8aa7567896644ad"
   solver-name = "gps-cdcl"
   solver-version = 1

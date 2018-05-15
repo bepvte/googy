@@ -2,19 +2,20 @@ package main
 
 import (
 	"errors"
-	"github.com/anaskhan96/soup"
-	"golang.org/x/net/html"
 	"log"
 	"net/url"
 	"strings"
+
+	"github.com/anaskhan96/soup"
+	"golang.org/x/net/html"
 )
 
 var prefixes = []string{
 	"ok google",
 	"okay google",
 	"hey google",
-	prefix+"google",
-	prefix+"g",
+	prefix + "google",
+	prefix + "g",
 	"ok googy",
 	"okay googy",
 	"hey googy",
