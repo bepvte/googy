@@ -17,9 +17,6 @@ const ocrTimeout = time.Second * 10
 
 func ocrInit() *gosseract.Client {
 	ocrcl := gosseract.NewClient()
-	ocrcl.Languages = []string{"osd", "eng"}
-	t := gosseract.PSM_AUTO_OSD
-	ocrcl.PageSegMode = &t
 
 	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
 	if tessdata_prefix == "" {

@@ -112,7 +112,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					}
 					var desc string
 					if msg.desc != "" {
-						desc = "```" + msg.desc + "```"
+						desc = " ```" + msg.desc + "```"
 					}
 					_, err := s.ChannelMessageSend(m.ChannelID, msg.url+desc+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
 					if err != nil {
