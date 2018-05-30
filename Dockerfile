@@ -1,6 +1,6 @@
-FROM golang:1.9-alpine3.7
+FROM golang:1.10-alpine3.7
 
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-dev leptonica-dev build-base
+RUN apk add --no-cache tesseract-ocr tesseract-ocr-dev leptonica-dev build-base figlet
 
 WORKDIR /go/src/googy
 COPY . .
