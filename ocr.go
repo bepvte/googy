@@ -53,11 +53,11 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	t, err := ocrcl.Text()
-  if err != nil {
-    log.Println("[OCR] error: ", err)
-    s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
-    return
-  }
+	if err != nil {
+		log.Println("[OCR] error: ", err)
+		s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
+		return
+	}
 	if t == "" {
 		s.ChannelMessageSend(m.ChannelID, "nothing found")
 

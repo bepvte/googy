@@ -130,7 +130,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
 	case strings.ToLower(m.Content) == prefix+"joinem":
 		s.ChannelMessageSend(m.ChannelID, "<a:joinem:394764206756593664>")
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"botban"):
+	case isCommand(m.Content, "botban"):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
@@ -147,15 +147,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			banned[m.Mentions[0].ID] = true
 		}
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"ocr"):
+	case isCommand(m.Content, "ocr"):
 		permWrap(s, m, "ocr", ocr)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"help"):
+	case isCommand(m.Content, "help"):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"add"):
+	case isCommand(m.Content, "add"):
 		permAdd(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"perms"):
+	case isCommand(m.Content, "perms"):
 		permList(s, m)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"del"):
+	case isCommand(m.Content, "del"):
 		permDel(s, m)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
 		//	permWrap(s, m, "magick", magick)
@@ -163,9 +163,23 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		//	permWrap(s, m, "magick", squish)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squosh"):
 		//	permWrap(s, m, "magick", squosh)
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"knuckles"):
+	case isCommand(m.Content, "knuckles"):
 		s.ChannelMessageSend(m.ChannelID, "CHUCKLES")
-	case strings.HasPrefix(strings.ToLower(m.Content), prefix+"figlet"):
+	case isCommand(m.Content, "figlet"):
 		figlet(s, m)
+	case isCommand(m.Content, "nick"):
+		permWrap(s, m, "nick", func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			c, err := s.Channel(m.ChannelID)
+			if err != nil {
+				return
+			}
+			if err := s.GuildMemberNickname(c.GuildID, "@me", strings.TrimPrefix(m.Content, prefix+"nick ")); err != nil {
+				s.ChannelMessageSend(m.ChannelID, err.Error())
+				log.Println("[NICK] Error:"+err.Error())
+			}
+		})
 	}
+}
+func isCommand(test, command string) bool {
+	return strings.HasPrefix(strings.ToLower(test), prefix+command)
 }
