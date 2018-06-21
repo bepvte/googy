@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/bwmarrin/discordgo"
-	"strings"
-	"os/exec"
 	"bytes"
+	"github.com/bwmarrin/discordgo"
 	"log"
+	"os/exec"
+	"strings"
 )
 
 func figlet(s *discordgo.Session, m *discordgo.MessageCreate) {
