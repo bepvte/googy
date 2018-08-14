@@ -19,6 +19,16 @@ void Free(TessBaseAPI a) {
   delete api;
 }
 
+void Clear(TessBaseAPI a) {
+  tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
+  api->Clear();
+}
+
+void ClearPersistentCache(TessBaseAPI a) {
+  tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
+  api->ClearPersistentCache();
+}
+
 int Init(TessBaseAPI a, char* tessdataprefix, char* languages) {
   tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
   return api->Init(tessdataprefix, languages);
@@ -40,16 +50,13 @@ bool SetVariable(TessBaseAPI a, char* name, char* value) {
   return api->SetVariable(name, value);
 }
 
-void SetImage(TessBaseAPI a, char* imagepath) {
+void SetPixImage(TessBaseAPI a, PixImage pix) {
   tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
-  Pix *image = pixRead(imagepath);
+  Pix *image = (Pix*) pix;
   api->SetImage(image);
-}
-
-void SetImageFromBuffer(TessBaseAPI a, unsigned char* data, int size) {
-  tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
-  Pix *image = pixReadMem(data, (size_t)size);
-  api->SetImage(image);
+  if (api->GetSourceYResolution() < 70) {
+    api->SetSourceResolution(70);
+  }
 }
 
 void SetPageSegMode(TessBaseAPI a, int m) {
@@ -77,4 +84,20 @@ const char* Version(TessBaseAPI a) {
   tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
   const char* v = api->Version();
   return v;
+}
+
+PixImage CreatePixImageByFilePath(char* imagepath) {
+  Pix *image = pixRead(imagepath);
+  return (void*)image;
+}
+
+PixImage CreatePixImageFromBytes(unsigned char* data, int size) {
+  Pix *image = pixReadMem(data, (size_t)size);
+  return (void*)image;
+}
+
+
+void DestroyPixImage(PixImage pix){
+  Pix *img = (Pix*) pix;
+  pixDestroy(&img);
 }
