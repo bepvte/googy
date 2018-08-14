@@ -70,7 +70,7 @@ func main() {
 		panic(err)
 	}
 	s.AddHandler(messageCreate)
-	s.UpdateStatus(0, "Its $ not & now")
+	s.UpdateStatus(0, "with my dogys :)`")
 
 	ocrInit()
 
@@ -175,7 +175,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			if err := s.GuildMemberNickname(c.GuildID, "@me", strings.TrimPrefix(m.Content, prefix+"nick ")); err != nil {
 				s.ChannelMessageSend(m.ChannelID, err.Error())
-				log.Println("[NICK] Error:"+err.Error())
+				log.Println("[NICK] Error:" + err.Error())
 			}
 		})
 	}
