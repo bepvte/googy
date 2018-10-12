@@ -4,9 +4,12 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -15,7 +18,18 @@ import (
 
 const ocrTimeout = time.Second * 10
 
-func ocrInit() *gosseract.Client {
+var ocrRegex = regexp.MustCompile(`\$ocr(\w{3})`)
+
+var ocrLangs = []string{
+	"eng",
+	"ara",
+	"jpn",
+	"rus",
+	"kor",
+	"ell",
+}
+
+func ocrInit(lang string) *gosseract.Client {
 	ocrcl := gosseract.NewClient()
 
 	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
@@ -25,13 +39,34 @@ func ocrInit() *gosseract.Client {
 	}
 
 	// setup a whitelist of all basic ascii
-	ocrcl.SetWhitelist(` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~` + "`")
+	if lang == "eng" {
+		ocrcl.SetWhitelist(` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~` + "`")
+	}
+	ocrcl.SetLanguage(lang)
 	return ocrcl
 }
 
 func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	c := time.NewTimer(ocrTimeout)
-	resp := getImage(m, s, "OCR", "ocr")
+	var lang string
+	{
+		if len(m.Content) >= 7 {
+			langmatch := ocrRegex.FindStringSubmatch(m.Content[0:7])
+			if len(langmatch) >= 2 {
+				for x := range ocrLangs {
+					if langmatch[1] == ocrLangs[x] {
+						lang = ocrLangs[x]
+					}
+				}
+			}
+		}
+	}
+	if lang == "" {
+		lang = "eng"
+		m.Content = strings.Replace(m.Content, "ocr", "ocreng", 1)
+	}
+	fmt.Println("[OCR]", lang)
+	resp := getImage(m, s, "OCR", "ocr"+lang)
 	if resp == nil {
 		return
 	}
@@ -44,7 +79,7 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	io.Copy(&buf, resp)
 
-	ocrcl := ocrInit()
+	ocrcl := ocrInit(lang)
 	defer ocrcl.Close()
 
 	ocrcl.SetImageFromBytes(buf.Bytes())
