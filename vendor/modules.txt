@@ -2,24 +2,24 @@
 github.com/anaskhan96/soup
 # github.com/bwmarrin/discordgo v0.18.0
 github.com/bwmarrin/discordgo
-# github.com/davecgh/go-spew v1.1.0
+# github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/gorilla/websocket v1.2.0
+# github.com/gorilla/websocket v1.4.0
 github.com/gorilla/websocket
-# github.com/lib/pq v0.0.0-20180523175426-90697d60dd84
+# github.com/lib/pq v1.0.0
 github.com/lib/pq
 github.com/lib/pq/oid
 # github.com/otiai10/gosseract v2.2.0+incompatible
 github.com/otiai10/gosseract
-# golang.org/x/crypto v0.0.0-20180808211826-de0752318171
+# golang.org/x/crypto v0.0.0-20181009213950-7c1a557ab941
 golang.org/x/crypto/nacl/secretbox
 golang.org/x/crypto/internal/subtle
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/salsa20/salsa
-# golang.org/x/net v0.0.0-20180811021610-c39426892332
+# golang.org/x/net v0.0.0-20181011144130-49bb7cea24b1
 golang.org/x/net/html
 golang.org/x/net/html/atom
-# upper.io/db.v3 v3.5.3+incompatible
+# upper.io/db.v3 v3.5.5+incompatible
 upper.io/db.v3
 upper.io/db.v3/lib/sqlbuilder
 upper.io/db.v3/postgresql

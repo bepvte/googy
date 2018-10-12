@@ -70,9 +70,7 @@ func main() {
 		panic(err)
 	}
 	s.AddHandler(messageCreate)
-	s.UpdateStatus(0, "with my dogys :)`")
-
-	ocrInit()
+	s.UpdateStatus(0, "with god.")
 
 	log.Println("We goin")
 	c := make(chan interface{})
@@ -122,10 +120,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 			}
 		}
-	case strings.HasPrefix(strings.ToLower(m.Content), "&google "):
-		fallthrough
-	case strings.HasPrefix(strings.ToLower(m.Content), "&g "):
-		s.ChannelMessageSend(m.ChannelID, "its "+prefix+" not & now dipshit")
 	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
 	case strings.ToLower(m.Content) == prefix+"joinem":
