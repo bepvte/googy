@@ -36,6 +36,9 @@ var roleregex = regexp.MustCompile("<@&(\\d+)>")
 
 func permCheck(s *discordgo.Session, m *discordgo.MessageCreate, what string) bool {
 	c, _ := s.State.Channel(m.ChannelID)
+	if c.Type == discordgo.ChannelTypeDM || c.Type == discordgo.ChannelTypeGroupDM {
+		return false
+	}
 	member, _ := s.State.Member(c.GuildID, m.Author.ID)
 
 	roleconds := make([]db.Compound, 0)

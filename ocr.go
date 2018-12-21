@@ -4,7 +4,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -65,7 +64,6 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 		lang = "eng"
 		m.Content = strings.Replace(m.Content, "ocr", "ocreng", 1)
 	}
-	fmt.Println("[OCR]", lang)
 	resp := getImage(m, s, "OCR", "ocr"+lang)
 	if resp == nil {
 		return
