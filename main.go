@@ -122,8 +122,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
-	case strings.ToLower(m.Content) == prefix+"joinem":
-		s.ChannelMessageSend(m.ChannelID, "<a:joinem:394764206756593664>")
 	case isCommand(m.Content, "botban"):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
@@ -145,6 +143,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		permWrap(s, m, "ocr", ocr)
 	case isCommand(m.Content, "help"):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
+	case isCommand(m.Content, "say"):
+		if m.Author.ID == os.Getenv("OWNER") {
+      s.ChannelMessageDelete(m.ChannelID, m.ID)
+      s.ChannelMessageSend(m.ChannelID, strings.TrimPrefix(m.Content, prefix+"say"))
+    }
 	case isCommand(m.Content, "add"):
 		permAdd(s, m)
 	case isCommand(m.Content, "perms"):
