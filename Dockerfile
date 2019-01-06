@@ -1,15 +1,20 @@
 FROM golang:alpine
 
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-dev tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell leptonica-dev build-base figlet
+RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell figlet 
+
+RUN
 
 WORKDIR /go/src/googy
 COPY . .
 
 ENV GO111MODULE=on
 
-# RUN go get
-RUN go install -v -mod=vendor ./...
-RUN strip /go/bin/googy
-RUN apk add --no-cache upx && upx /go/bin/googy && apk del upx
+RUN apk add --no-cache --virtual .build-deps upx build-base leptonica-dev tesseract-ocr-dev \
+ && go install -v -mod=vendor ./... \
+ && strip /go/bin/googy \
+ && upx /go/bin/googy \
+ && apk del .build-deps
 
 CMD ["googy"]
+
+LABEL IMPORTANT=yes
