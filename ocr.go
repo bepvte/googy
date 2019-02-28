@@ -31,8 +31,8 @@ var ocrLangs = []string{
 func ocrInit(lang string) *gosseract.Client {
 	ocrcl := gosseract.NewClient()
 
-	tessdata_prefix := os.Getenv("TESSDATA_PREFIX")
-	if tessdata_prefix == "" {
+	tessdataPrefix := os.Getenv("TESSDATA_PREFIX")
+	if tessdataPrefix == "" {
 		p := "/usr/share/tessdata/" //this sucks fuck u golang
 		ocrcl.TessdataPrefix = &p
 	}

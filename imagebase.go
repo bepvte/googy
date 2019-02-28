@@ -18,12 +18,12 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 			log.Println(fmt.Sprintf("[%v] ", modname), e)
 		}
 	}()
-	var earliestUrl string
+	var earliestURL string
 	if len(m.Attachments) != 0 {
-		earliestUrl = getUrl(m.Message)
+		earliestURL = getURL(m.Message)
 	} else if len(strings.Split(m.Content, " ")) == 2 {
-		earliestUrl = strings.Split(m.Content, " ")[1]
-		if _, err := url.ParseRequestURI(earliestUrl); err != nil {
+		earliestURL = strings.Split(m.Content, " ")[1]
+		if _, err := url.ParseRequestURI(earliestURL); err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The url you put next to '"+prefix+"%v' is invalid.", cmdname))
 			return nil
 		}
@@ -33,24 +33,24 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 			panic(err)
 		}
 		for _, x := range msgs {
-			u := getUrl(x)
+			u := getURL(x)
 			if u != "" {
-				earliestUrl = u
+				earliestURL = u
 				log.Println(u)
 				break
 			}
 		}
 	}
-	if earliestUrl == "" {
+	if earliestURL == "" {
 		s.ChannelMessageSend(m.ChannelID, "Your command didnt include a url or attachment!")
 		return nil
 	}
 
 	//alright time to go
 
-	resp, err := http.Get(earliestUrl)
+	resp, err := http.Get(earliestURL)
 	if err != nil {
-		log.Println(fmt.Sprintf("[%v] Couldnt get: %v", modname, earliestUrl))
+		log.Println(fmt.Sprintf("[%v] Couldnt get: %v", modname, earliestURL))
 		s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 		return nil
 	}
@@ -62,7 +62,7 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 	return resp.Body
 }
 
-func getUrl(x *discordgo.Message) string {
+func getURL(x *discordgo.Message) string {
 	if len(x.Attachments) != 0 {
 		return x.Attachments[0].URL
 	}
@@ -79,7 +79,7 @@ func getUrl(x *discordgo.Message) string {
 func reverse(lst []*discordgo.Message) chan *discordgo.Message {
 	ret := make(chan *discordgo.Message)
 	go func() {
-		for i, _ := range lst {
+		for i := range lst {
 			ret <- lst[len(lst)-1-i]
 		}
 		close(ret)
