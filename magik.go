@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"gopkg.in/gographics/imagick.v2/imagick"
+	"gopkg.in/gographics/imagick.v3/imagick"
 )
 
 func magickInit() {
