@@ -86,7 +86,7 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	t, err := ocrcl.Text()
-  t = strings.ReplaceAll(t, "@", "@​")
+  t = strings.Replace(t, "@", "@​", -1)
 	if err != nil {
 		log.Println("[OCR] error: ", err)
 		s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
