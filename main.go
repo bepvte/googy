@@ -175,6 +175,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				log.Println("[NICK] Error:" + err.Error())
 			}
 		})
+  case isCommand(m.Content, "tickle"):
+    s.ChannelMessageSend(m.ChannelID, "HEHEHEHEHEHEHE!!!")
 	}
 }
 func isCommand(test, command string) bool {
