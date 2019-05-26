@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/davecgh/go-spew/spew"
 	_ "github.com/lib/pq"
 	"upper.io/db.v3/lib/sqlbuilder"
 	"upper.io/db.v3/postgresql"
@@ -18,6 +17,16 @@ var s *discordgo.Session
 var database sqlbuilder.Database
 
 var banned = map[string]bool{}
+var prefixes = []string{
+	"ok google",
+	"okay google",
+	"hey google",
+	prefix + "google",
+	prefix + "g",
+	"ok googy",
+	"okay googy",
+	"hey googy",
+}
 
 const prefix = "$"
 
@@ -83,11 +92,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	switch {
 	default:
-		var trimmed string
+		// var trimmed string
 		for x := range prefixes {
 			if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]+" ") {
 
-				trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
+				/* trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
 				log.Println(trimmed)
 				if permCheck(s, m, "google") {
 					return
@@ -117,7 +126,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 						log.Println(err)
 					}
 					break
-				}
+				*/
+				s.MessageReactionAdd(m.ChannelID, m.ID, "🙅")
+				break
 			}
 		}
 	case strings.ToLower(m.Content) == prefix+"pacman":
@@ -145,9 +156,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "yerm")
 	case isCommand(m.Content, "say"):
 		if m.Author.ID == os.Getenv("OWNER") {
-      s.ChannelMessageDelete(m.ChannelID, m.ID)
-      s.ChannelMessageSend(m.ChannelID, strings.TrimPrefix(m.Content, prefix+"say"))
-    }
+			s.ChannelMessageDelete(m.ChannelID, m.ID)
+			s.ChannelMessageSend(m.ChannelID, strings.TrimPrefix(m.Content, prefix+"say"))
+		}
 	case isCommand(m.Content, "add"):
 		permAdd(s, m)
 	case isCommand(m.Content, "perms"):
@@ -175,8 +186,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				log.Println("[NICK] Error:" + err.Error())
 			}
 		})
-  case isCommand(m.Content, "tickle"):
-    s.ChannelMessageSend(m.ChannelID, "HEHEHEHEHEHEHE!!!")
+	case isCommand(m.Content, "tickle"):
+		s.ChannelMessageSend(m.ChannelID, "HEHEHEHEHEHEHE!!!")
 	}
 }
 func isCommand(test, command string) bool {
