@@ -1,21 +1,19 @@
 package main
 
 import (
-	"io/ioutil"
+	"bufio"
+	"io"
 	"log"
 	"os"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	_ "github.com/lib/pq"
-	"upper.io/db.v3/lib/sqlbuilder"
-	"upper.io/db.v3/postgresql"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var s *discordgo.Session
 
-var database sqlbuilder.Database
-
+var bannedFile *os.File
 var banned = map[string]bool{}
 var prefixes = []string{
 	"ok google",
@@ -34,43 +32,17 @@ func main() {
 	//token, err := ioutil.ReadFile("token")
 	token := os.Getenv("TOKEN")
 	if token == "" {
-		log.Fatalln("MAKE A `token` FILE")
+		log.Fatalln("set env var TOKEN")
 	}
-	u, err := postgresql.ParseURL(os.Getenv("DATABASE_URL"))
+	var err error
+	bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
-	database, err = postgresql.Open(u)
-	if err != nil {
-		panic(err)
+	scanner := bufio.NewScanner(bannedFile)
+	for scanner.Scan() {
+		banned[scanner.Text()] = true
 	}
-	// database.SetLogging(true)
-
-	file, _ := ioutil.ReadFile("perms.sql")
-	if _, err := database.Exec(string(file)); err != nil {
-		panic(err)
-	}
-	{
-		rows, err := database.Query("SELECT myid FROM store")
-		if err != nil {
-			panic(err)
-		}
-		for rows.Next() {
-			var x string
-			if err := rows.Scan(&x); err != nil {
-				panic(err)
-			}
-			banned[x] = true
-		}
-	}
-	//bannedFile, err = os.OpenFile("banned", os.O_APPEND|os.O_RDWR|os.O_CREATE, 0666)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//scanner := bufio.NewScanner(bannedFile)
-	//for scanner.Scan() {
-	//	banned[scanner.Text()] = true
-	//}
 	s, err = discordgo.New("Bot " + string(token))
 	if err != nil {
 		panic(err)
@@ -92,15 +64,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	switch {
 	default:
-		// var trimmed string
+		var trimmed string
 		for x := range prefixes {
 			if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]+" ") {
 
-				/* trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
+				trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
 				log.Println(trimmed)
-				if permCheck(s, m, "google") {
-					return
-				}
 				defer func() {
 					e := recover()
 					if e != nil {
@@ -125,11 +94,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					if err != nil {
 						log.Println(err)
 					}
-					break
-				*/
-				s.MessageReactionAdd(m.ChannelID, m.ID, "🙅")
-				break
+				}
+
 			}
+			break
 		}
 	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
@@ -144,14 +112,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				s.ChannelMessageSend(m.ChannelID, prefix+"botban <usermention>")
 				return
 			}
-			if _, err := database.Exec("INSERT INTO store VALUES ($1)", m.Mentions[0].ID); err != nil {
-				s.ChannelMessageSend(m.ChannelID, "failed to ban user. maybe they are already banned?")
-				return
+			if _, err := io.WriteString(bannedFile, m.Mentions[0].ID+"\n"); err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(err)+"\n``` ahh uhhh ahh ahh")
 			}
 			banned[m.Mentions[0].ID] = true
 		}
 	case isCommand(m.Content, "ocr"):
-		permWrap(s, m, "ocr", ocr)
+		ocr(s, m)
 	case isCommand(m.Content, "help"):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
 	case isCommand(m.Content, "say"):
@@ -159,12 +126,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
 			s.ChannelMessageSend(m.ChannelID, strings.TrimPrefix(m.Content, prefix+"say"))
 		}
-	case isCommand(m.Content, "add"):
-		permAdd(s, m)
-	case isCommand(m.Content, "perms"):
-		permList(s, m)
-	case isCommand(m.Content, "del"):
-		permDel(s, m)
+		// case isCommand(m.Content, "add"):
+		// 	permAdd(s, m)
+		// case isCommand(m.Content, "perms"):
+		// 	permList(s, m)
+		// case isCommand(m.Content, "del"):
+		// 	permDel(s, m)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
 		//	permWrap(s, m, "magick", magick)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squish"):
@@ -176,16 +143,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case isCommand(m.Content, "figlet"):
 		figlet(s, m)
 	case isCommand(m.Content, "nick"):
-		permWrap(s, m, "nick", func(s *discordgo.Session, m *discordgo.MessageCreate) {
-			c, err := s.Channel(m.ChannelID)
-			if err != nil {
-				return
-			}
-			if err := s.GuildMemberNickname(c.GuildID, "@me", strings.TrimPrefix(m.Content, prefix+"nick ")); err != nil {
-				s.ChannelMessageSend(m.ChannelID, err.Error())
-				log.Println("[NICK] Error:" + err.Error())
-			}
-		})
+		c, err := s.Channel(m.ChannelID)
+		if err != nil {
+			return
+		}
+		if err := s.GuildMemberNickname(c.GuildID, "@me", strings.TrimPrefix(m.Content, prefix+"nick ")); err != nil {
+			s.ChannelMessageSend(m.ChannelID, err.Error())
+			log.Println("[NICK] Error:" + err.Error())
+		}
 	case isCommand(m.Content, "tickle"):
 		s.ChannelMessageSend(m.ChannelID, "HEHEHEHEHEHEHE!!!")
 	}
