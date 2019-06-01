@@ -1,6 +1,6 @@
 FROM golang:alpine
 
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell figlet 
+RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell figlet
 
 RUN apk add --no-cache --virtual .build-deps upx build-base leptonica-dev tesseract-ocr-dev
 
