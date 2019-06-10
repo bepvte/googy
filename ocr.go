@@ -26,6 +26,7 @@ var ocrLangs = []string{
 	"rus",
 	"kor",
 	"ell",
+	"fra",
 }
 
 func ocrInit(lang string) *gosseract.Client {
