@@ -1,3 +1,7 @@
 token
 googy
 .idea/**
+libs/
+tesseract/
+leptonica/
+prefix/

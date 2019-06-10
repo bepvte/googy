@@ -1,18 +1,16 @@
-FROM golang:alpine
+FROM golang:1.12
 
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell figlet
+# RUN  tesseract-ocr tesseract-ocr-data-ara tesseract-ocr-data-jpn tesseract-ocr-data-rus tesseract-ocr-data-kor tesseract-ocr-data-ell figlet
 
-RUN apk add --no-cache --virtual .build-deps upx build-base leptonica-dev tesseract-ocr-dev
+RUN apt-get update && apt-get install -y upx libtesseract-dev libleptonica-dev
 
 WORKDIR /go/src/googy
-COPY . .
+# COPY . .
 
-ENV GO111MODULE=on
-RUN go install -v -mod=vendor ./... \
- && strip /go/bin/googy \
- && upx /go/bin/googy
-RUN apk del .build-deps
+# ENV GO111MODULE=on
+# RUN go build -ldflags="-s -w" -v -mod=vendor \
+#  && upx googy
 
-CMD ["googy"]
+# CMD ["googy"]
 
-LABEL IMPORTANT=yes
+# LABEL IMPORTANT=yes

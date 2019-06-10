@@ -1,32 +1,37 @@
+// +build ignore
 package main
 
-// #cgo LDFLAGS: -L${SRCDIR}/libs -lgooglescrape
-// #include "googlescrape.h"
+// #cgo LDFLAGS: -L${SRCDIR}/libs -Wl,-rpath,$ORIGIN/libs -Wl,-rpath,$ORIGIN -lgooglescrape
+// #include "libs/googlescrape.h"
 import "C"
-import "unsafe"
-import "errors"
+import (
+    "unsafe"
+	"errors"
+	"bytes"
+	"github.com/vmihailenco/msgpack"
+)
+//not used
 
 type result struct {
-	url, desc string
+	Link string `msgpack:"link"`
+	Description string `msgpack:"description"`
 }
+type resultCollection []result
 
-func google(s string) (ret []result, err error) {
+func google(s string) ([]result, error) {
 	cs := C.CString(s)
 	r := C.google(cs)
 	C.free(unsafe.Pointer(cs))
-	defer func() {
-		if r.err == nil {
-			C.freeGResults(r)
-		}
-	}()
-	if r.err != nil { return []result{}, errors.New(C.GoString(r.err))}
-	res := (*[3]C.GResult)(unsafe.Pointer(r.ret))[:3:3]
-	ret = make([]result, 3)
-	for x:=0; x<=2; x++ {
-		ret[x] = result{
-			url: C.GoString(res[x].link),
-			desc: C.GoString(res[x].description),
-		}
+	defer C.freeGResults(r)
+	eboy := C.GoBytes(unsafe.Pointer(r.val), r.len)
+	decoder := msgpack.NewDecoder(bytes.NewReader(eboy))
+	if x, err := decoder.DecodeString(); err == nil {
+		return nil, errors.New(x)
 	}
-	return
+	decoder.Reset(bytes.NewReader(eboy))
+	var ret resultCollection
+	if err := decoder.Decode(&ret); err != nil {
+		return nil, err
+	}
+	return ret, nil
 }
