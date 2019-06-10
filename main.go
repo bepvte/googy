@@ -15,6 +15,9 @@ var s *discordgo.Session
 
 var bannedFile *os.File
 var banned = map[string]bool{}
+
+const prefix = "$"
+
 var prefixes = []string{
 	"ok google",
 	"okay google",
@@ -25,8 +28,6 @@ var prefixes = []string{
 	"okay googy",
 	"hey googy",
 }
-
-const prefix = "$"
 
 func main() {
 	//token, err := ioutil.ReadFile("token")
@@ -64,40 +65,41 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	switch {
 	default:
-		var trimmed string
+		// var trimmed string
 		for x := range prefixes {
 			if strings.HasPrefix(strings.ToLower(m.Content), prefixes[x]+" ") {
+				s.ChannelMessageSend(m.ChannelID, "use scruntddg you freak!!!!!!!! good bye")
 
-				trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
-				log.Println(trimmed)
-				defer func() {
-					e := recover()
-					if e != nil {
-						log.Println("Panic caught: ", spew.Sprint(e))
-						s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(e)+"\n``` ahh uhhh ahh ahh")
-					}
-				}()
-				result, err := google(trimmed)
-				if err != nil {
-					panic(err)
-				} else {
-					msg := result[0]
-					var resultSanitized []string
-					for _, x := range result[1:] {
-						resultSanitized = append(resultSanitized, "<"+x.url+">")
-					}
-					var desc string
-					if msg.desc != "" {
-						desc = " ```" + msg.desc + "```"
-					}
-					_, err := s.ChannelMessageSend(m.ChannelID, msg.url+desc+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
-					if err != nil {
-						log.Println(err)
-					}
-				}
+				// 		trimmed = strings.TrimSpace(strings.TrimPrefix(m.Content[len(prefixes[x]+" "):], ",")) // trimmed it wowow
+				// 		log.Println(trimmed)
+				// 		defer func() {
+				// 			e := recover()
+				// 			if e != nil {
+				// 				log.Println("Panic caught: ", spew.Sprint(e))
+				// 				s.ChannelMessageSend(m.ChannelID, "Error uhh ahhh ahh uuhhhh\n```\n"+spew.Sprint(e)+"\n``` ahh uhhh ahh ahh")
+				// 			}
+				// 		}()
+				// 		result, err := google(trimmed)
+				// 		if err != nil {
+				// 			panic(err)
+				// 		} else {
+				// 			msg := result[0]
+				// 			var resultSanitized []string
+				// 			for _, x := range result[1:] {
+				// 				resultSanitized = append(resultSanitized, "<"+x.Link+">")
+				// 			}
+				// 			var desc string
+				// 			if msg.Description != "" {
+				// 				desc = " ```" + msg.Description + "```"
+				// 			}
+				// 			_, err := s.ChannelMessageSend(m.ChannelID, msg.Link+desc+"\n**See also:**\n"+strings.Join(resultSanitized, "\n"))
+				// 			if err != nil {
+				// 				log.Println(err)
+				// 			}
+				// }
+				break
 
 			}
-			break
 		}
 	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
