@@ -17,7 +17,8 @@ import (
 
 const ocrTimeout = time.Second * 10
 
-var ocrRegex = regexp.MustCompile(`\$ocr(\w{3})`)
+// NOTE: this dot is supposed to be a catch everything 😶
+var ocrRegex = regexp.MustCompile(`^.ocr(\w{3})`)
 
 var ocrLangs = []string{
 	"eng",
@@ -87,7 +88,7 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	t, err := ocrcl.Text()
-  t = strings.Replace(t, "@", "@​", -1)
+	t = strings.Replace(t, "@", "@​", -1)
 	if err != nil {
 		log.Println("[OCR] error: ", err)
 		s.ChannelMessageSend(m.ChannelID, "OCR failed with error\n```"+err.Error()+"\n```")
