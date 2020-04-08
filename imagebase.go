@@ -24,7 +24,7 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 	} else if len(strings.Split(m.Content, " ")) == 2 {
 		earliestURL = strings.Split(m.Content, " ")[1]
 		if _, err := url.ParseRequestURI(earliestURL); err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The url you put next to '"+prefix+"%v' is invalid.", cmdname))
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("The url you put next to '$%v' is invalid.", cmdname))
 			return nil
 		}
 	} else {

@@ -16,8 +16,6 @@ var s *discordgo.Session
 var bannedFile *os.File
 var banned = map[string]bool{}
 
-const prefix = "$"
-
 func main() {
 	//token, err := ioutil.ReadFile("token")
 	token := os.Getenv("TOKEN")
@@ -52,10 +50,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID || m.Author.Bot || banned[m.Author.ID] {
 		return
 	}
+	var prefix = "$"
+	if m.GuildID == "449701194881826819" {
+		prefix = "."
+	}
 	switch {
 	case strings.ToLower(m.Content) == prefix+"pacman":
 		s.ChannelMessageSend(m.ChannelID, "<:pacman:324163173596790786>")
-	case isCommand(m.Content, "botban"):
+	case isCommand(m.Content, "botban", prefix):
 		permissions, err := s.State.UserChannelPermissions(m.Author.ID, m.ChannelID)
 		if err != nil {
 			log.Println(err)
@@ -71,32 +73,26 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			banned[m.Mentions[0].ID] = true
 		}
-	case isCommand(m.Content, "ocr"):
+	case isCommand(m.Content, "ocr", prefix):
 		ocr(s, m)
-	case isCommand(m.Content, "help"):
+	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
-	case isCommand(m.Content, "say"):
+	case isCommand(m.Content, "say", prefix):
 		if m.Author.ID == os.Getenv("OWNER") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
 			s.ChannelMessageSend(m.ChannelID, strings.TrimPrefix(m.Content, prefix+"say"))
 		}
-		// case isCommand(m.Content, "add"):
-		// 	permAdd(s, m)
-		// case isCommand(m.Content, "perms"):
-		// 	permList(s, m)
-		// case isCommand(m.Content, "del"):
-		// 	permDel(s, m)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"magick"):
 		//	permWrap(s, m, "magick", magick)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squish"):
 		//	permWrap(s, m, "magick", squish)
 		//case strings.HasPrefix(strings.ToLower(m.Content), prefix+"squosh"):
 		//	permWrap(s, m, "magick", squosh)
-	case isCommand(m.Content, "knuckles"):
+	case isCommand(m.Content, "knuckles", prefix):
 		s.ChannelMessageSend(m.ChannelID, "CHUCKLES")
-	case isCommand(m.Content, "figlet"):
+	case isCommand(m.Content, "figlet", prefix):
 		figlet(s, m)
-	case isCommand(m.Content, "nick"):
+	case isCommand(m.Content, "nick", prefix):
 		c, err := s.Channel(m.ChannelID)
 		if err != nil {
 			return
@@ -105,10 +101,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, err.Error())
 			log.Println("[NICK] Error:" + err.Error())
 		}
-	case isCommand(m.Content, "tickle"):
+	case isCommand(m.Content, "tickle", prefix):
 		s.ChannelMessageSend(m.ChannelID, "HEHEHEHEHEHEHE!!!")
 	}
 }
-func isCommand(test, command string) bool {
+func isCommand(test, command, prefix string) bool {
 	return strings.HasPrefix(strings.ToLower(test), prefix+command)
 }

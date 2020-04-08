@@ -12,7 +12,7 @@ import (
 func figlet(s *discordgo.Session, m *discordgo.MessageCreate) {
 	trimmed := strings.Join(strings.Split(m.Content, " ")[1:], " ")
 	if len(strings.Replace(trimmed, " ", "", -1)) > 10 || len(trimmed) == 0 {
-		s.ChannelMessageSend(m.ChannelID, "Usage: "+prefix+"figlet [less then 10 letters]")
+		s.ChannelMessageSend(m.ChannelID, "Usage: $figlet [less then 10 letters]")
 		return
 	}
 	c := exec.Command("figlet", trimmed)
