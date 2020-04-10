@@ -78,11 +78,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case isCommand(m.Content, "ocr", prefix):
 		ocr(s, m)
 	case isCommand(m.Content, "listocr", prefix):
-		x := ""
-		for _, lang := range ocrLangs {
-			x = x + lang + "\n"
+		if m.Author.ID == os.Getenv("OWNER") {
+			x := ""
+			for _, lang := range ocrLangs {
+				x = x + lang + "\n"
+			}
+			s.ChannelMessageSend(m.ChannelID, x)
 		}
-		s.ChannelMessageSend(m.ChannelID, x)
 	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
 	case isCommand(m.Content, "say", prefix):

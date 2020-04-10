@@ -36,7 +36,7 @@ func ocrInit() {
 		if !strings.Contains(name, "traineddata") {
 			continue
 		}
-		ocrLangs = append(ocrLangs, name[0:3])
+		ocrLangs = append(ocrLangs, strings.Split(name, ".traineddata")[0])
 	}
 	spew.Dump(ocrLangs)
 }
