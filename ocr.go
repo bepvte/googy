@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/otiai10/gosseract"
 )
 
@@ -38,7 +37,6 @@ func ocrInit() {
 		}
 		ocrLangs = append(ocrLangs, strings.Split(name, ".traineddata")[0])
 	}
-	spew.Dump(ocrLangs)
 }
 
 func ocrPrefix() (prefix string) {
