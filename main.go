@@ -41,6 +41,8 @@ func main() {
 	s.AddHandler(messageCreate)
 	s.UpdateStatus(0, "with god.")
 
+	ocrInit()
+
 	log.Println("We goin")
 	c := make(chan interface{})
 	<-c
@@ -75,6 +77,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case isCommand(m.Content, "ocr", prefix):
 		ocr(s, m)
+	case isCommand(m.Content, "listocr", prefix):
+		x := ""
+		for _, lang := range ocrLangs {
+			x = x + lang + "\n"
+		}
+		s.ChannelMessageSend(m.ChannelID, x)
 	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
 	case isCommand(m.Content, "say", prefix):
