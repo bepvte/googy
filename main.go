@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mitchellh/go-wordwrap"
 )
 
 var s *discordgo.Session
@@ -79,11 +80,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		ocr(s, m)
 	case isCommand(m.Content, "listocr", prefix):
 		if m.Author.ID == os.Getenv("OWNER") {
-			x := ""
-			for _, lang := range ocrLangs {
-				x = x + lang + "\n"
-			}
-			s.ChannelMessageSend(m.ChannelID, x)
+			s.ChannelMessageSend(m.ChannelID, wordwrap.WrapString(strings.Join(ocrLangs, " "), 80))
 		}
 	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
