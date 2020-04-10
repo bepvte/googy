@@ -80,7 +80,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		ocr(s, m)
 	case isCommand(m.Content, "listocr", prefix):
 		if m.Author.ID == os.Getenv("OWNER") {
-			s.ChannelMessageSend(m.ChannelID, wordwrap.WrapString(strings.Join(ocrLangs, " "), 80))
+			s.ChannelMessageSend(m.ChannelID, wordwrap.WrapString(strings.Join(ocrLangs, " ")+"\ntranslate these names at https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html", 80))
 		}
 	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
