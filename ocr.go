@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/otiai10/gosseract"
 )
 
@@ -20,24 +21,39 @@ const ocrTimeout = time.Second * 10
 // NOTE: this dot is supposed to be a catch everything 😶
 var ocrRegex = regexp.MustCompile(`^.ocr(\w{3})`)
 
-var ocrLangs = []string{
-	"eng",
-	"ara",
-	"jpn",
-	"rus",
-	"kor",
-	"ell",
-	"fra",
+var ocrLangs []string
+
+func ocrInit() {
+	temp, err := os.Open(ocrPrefix())
+	if err != nil {
+		panic(err)
+	}
+	names, err := temp.Readdirnames(0)
+	if err != nil {
+		panic(err)
+	}
+	for _, name := range names {
+		if !strings.Contains(name, "traineddata") {
+			continue
+		}
+		ocrLangs = append(ocrLangs, name[0:3])
+	}
+	spew.Dump(ocrLangs)
 }
 
-func ocrInit(lang string) *gosseract.Client {
+func ocrPrefix() (prefix string) {
+	prefix = os.Getenv("TESSDATA_PREFIX")
+	if prefix == "" {
+		prefix = "/usr/share/tessdata/"
+	}
+	return
+}
+
+func ocrClient(lang string) *gosseract.Client {
 	ocrcl := gosseract.NewClient()
 
-	tessdataPrefix := os.Getenv("TESSDATA_PREFIX")
-	if tessdataPrefix == "" {
-		p := "/usr/share/tessdata/" //this sucks fuck u golang
-		ocrcl.TessdataPrefix = &p
-	}
+	p := ocrPrefix() //this sucks fuck you golang
+	ocrcl.TessdataPrefix = &p
 
 	// setup a whitelist of all basic ascii
 	if lang == "eng" {
@@ -79,7 +95,7 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	io.Copy(&buf, resp)
 
-	ocrcl := ocrInit(lang)
+	ocrcl := ocrClient(lang)
 	defer ocrcl.Close()
 
 	ocrcl.SetImageFromBytes(buf.Bytes())
