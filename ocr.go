@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -37,6 +38,7 @@ func ocrInit() {
 		}
 		ocrLangs = append(ocrLangs, strings.Split(name, ".traineddata")[0])
 	}
+	sort.Strings(ocrLangs)
 }
 
 func ocrPrefix() (prefix string) {
