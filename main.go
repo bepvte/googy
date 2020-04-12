@@ -84,6 +84,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	case isCommand(m.Content, "help", prefix):
 		s.ChannelMessageSend(m.ChannelID, "yerm")
+	case isCommand(m.Content, "ping", prefix):
+		s.ChannelMessageSend(m.ChannelID, "pon")
 	case isCommand(m.Content, "say", prefix):
 		if m.Author.ID == os.Getenv("OWNER") {
 			s.ChannelMessageDelete(m.ChannelID, m.ID)
