@@ -3,13 +3,13 @@ module github.com/bepvte/googy
 go 1.12
 
 require (
-	github.com/bwmarrin/discordgo v0.20.2
+	github.com/bwmarrin/discordgo v0.20.3
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0
 	github.com/otiai10/gosseract v2.2.1+incompatible
 	github.com/otiai10/mint v1.3.1 // indirect
-	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71 // indirect
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
-	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
+	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc // indirect
+	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0 // indirect
+	golang.org/x/sys v0.0.0-20200428200454-593003d681fa // indirect
 )
