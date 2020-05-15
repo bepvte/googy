@@ -36,7 +36,6 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 			u := getURL(x)
 			if u != "" {
 				earliestURL = u
-				log.Println(u)
 				break
 			}
 		}
