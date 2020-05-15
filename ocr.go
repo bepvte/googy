@@ -44,7 +44,7 @@ func ocrInit() {
 func ocrPrefix() (prefix string) {
 	prefix = os.Getenv("TESSDATA_PREFIX")
 	if prefix == "" {
-		prefix = "/usr/share/tessdata/"
+		prefix = "/usr/share/tesseract/tessdata/"
 	}
 	return
 }
