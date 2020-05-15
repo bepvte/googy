@@ -114,7 +114,14 @@ func ocr(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "nothing found")
 
 	} else if len(t) >= 900 {
-		s.ChannelMessageSend(m.ChannelID, t[:900]+"\nThe rest of the result was too long to display")
+		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+			Content: t[:900] + "\nThe rest of the result was too long to display: ",
+			Files: []*discordgo.File{{
+				Name:        "message.txt",
+				ContentType: "text/plain",
+				Reader:      strings.NewReader(t),
+			}},
+		})
 	} else {
 		s.ChannelMessageSend(m.ChannelID, t)
 	}
