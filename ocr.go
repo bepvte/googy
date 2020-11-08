@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/otiai10/gosseract"
+	"github.com/otiai10/gosseract/v2"
 )
 
 const ocrTimeout = time.Second * 10
