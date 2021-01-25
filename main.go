@@ -40,7 +40,7 @@ func main() {
 		panic(err)
 	}
 	s.AddHandler(messageCreate)
-	s.UpdateStatus(0, "with god.")
+	s.UpdateGameStatus(0, "with god.")
 
 	ocrInit()
 
