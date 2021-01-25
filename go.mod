@@ -3,7 +3,7 @@ module github.com/bepvte/googy
 go 1.12
 
 require (
-	github.com/bwmarrin/discordgo v0.22.1
+	github.com/bwmarrin/discordgo v0.23.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1
