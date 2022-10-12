@@ -49,12 +49,12 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 
 	resp, err := http.Get(earliestURL)
 	if err != nil {
-		log.Println(fmt.Sprintf("[%v] Couldnt get: %v", modname, earliestURL))
+		log.Println(fmt.Sprintf("[%v] Couldnt get: %q", modname, earliestURL))
 		s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 		return nil
 	}
 	if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
-		log.Println(fmt.Sprintf("[%v] url was not an image: %v", resp.Request.URL))
+		log.Println(fmt.Sprintf("[%v] url was not an image: %q", resp.Request.URL))
 		s.ChannelMessageSend(m.ChannelID, "URL didn't give me an image.")
 		return nil
 	}
