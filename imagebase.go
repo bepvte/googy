@@ -54,8 +54,8 @@ func getImage(m *discordgo.MessageCreate, s *discordgo.Session, modname, cmdname
 		return nil
 	}
 	if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
-		log.Println(resp.Request.URL)
-		s.ChannelMessageSend(m.ChannelID, "The link wont work...")
+		log.Println(fmt.Sprintf("[%v] url was not an image: %v", resp.Request.URL))
+		s.ChannelMessageSend(m.ChannelID, "URL didn't give me an image.")
 		return nil
 	}
 	return resp.Body
