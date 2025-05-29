@@ -1,9 +1,0 @@
-version: 2
-updates:
-- package-ecosystem: gomod
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-  ignore:
-    - dependency-name: "github.com/otiai10/gosseract/v2"
