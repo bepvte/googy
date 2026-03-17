@@ -53,7 +53,7 @@ func ocrClient(lang string) *gosseract.Client {
 	ocrcl := gosseract.NewClient()
 
 	p := ocrPrefix() //this sucks fuck you golang
-	ocrcl.TessdataPrefix = &p
+	ocrcl.TessdataPrefix = p
 
 	// setup a whitelist of all basic ascii
 	if lang == "eng" {
